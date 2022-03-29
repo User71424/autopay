@@ -1,7 +1,6 @@
 import vk_api
 from vk_api.longpoll import VkLongPoll, VkEventType
 import random, re, threading, time
-import functions
 # инициализация сессии #
 vk_session = vk_api.VkApi(login='89817166139', password='Sr55321q', app_id=2685278)
 vk_session.auth(token_only=True)

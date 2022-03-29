@@ -1,6 +1,6 @@
 import vk_api
 from vk_api.longpoll import VkLongPoll, VkEventType
-import random, re, threading
+import random, re, threading, time
 import functions
 # инициализация сессии #
 vk_session = vk_api.VkApi(login='89817166139', password='Sr55321q', app_id=2685278)
@@ -27,10 +27,26 @@ def autopost(peer_id, message):
     send_message(peer_id, message)
 
 
+def baf_request(baf_name, apo_num, peer_id):
+    send_message(peer_id, 'апо ' + str(apo_num))
+    send_message(peer_id, 'хочу баф ' + baf_name)
+
+
+
+def get_id(text):
+    num = 0
+    for i in range(4, len(text)):
+        if text[i] != '|':
+            num = num * 10 + int(text[i])
+        else:
+            break
+    return num
+
+
 for msg in longpoll.listen():
     if msg.type == VkEventType.MESSAGE_NEW:
         #Диалог с собой - настройка
-        if msg.peer_id == myId and msg.user_id == myId:
+        if msg.to_me is True and msg.from_user is True and msg.user_id == myId:
             if msg.text.lower() == 'пп':
                 send_message(msg.peer_id, 'Жив')
             if msg.text.lower() == 'стартспам':
@@ -67,15 +83,15 @@ for msg in longpoll.listen():
                 else:
                     items.pop(item)
                     send_message(msg.peer_id, item + ' удалено')
-        if msg.user_id == myId and msg.text.split()[0].lower() == 'баф':
+        if msg.from_user is True and msg.user_id == myId and msg.text.split()[0].lower() == 'баф':
             for i in range(4, len(msg.text)):
-                if msg.Text[i] == 'а':
-                    functions.baf_request('атаки', 5, msg.peer_id)
-                if msg.Text[i] == 'з':
-                    functions.baf_request('защиты', 7, msg.peer_id)
-                if msg.Text[i] == 'у':
-                    functions.baf_request('удачи', 2, msg.peer_id)
-                if msg.Text[i] == 'ч':
-                    functions.baf_request('человека', 3, msg.peer_id)
-                if msg.Text[i] == 'н':
-                    functions.baf_request('нежити', 7, msg.peer_id)
+                if msg.text[i] == 'а':
+                    baf_request('атаки', 5, msg.peer_id)
+                if msg.text[i] == 'з':
+                    baf_request('защиты', 7, msg.peer_id)
+                if msg.text[i] == 'у':
+                    baf_request('удачи', 2, msg.peer_id)
+                if msg.text[i] == 'ч':
+                    baf_request('человека', 3, msg.peer_id)
+                if msg.text[i] == 'н':
+                    baf_request('нежити', 7, msg.peer_id)

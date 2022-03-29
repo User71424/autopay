@@ -67,8 +67,8 @@ for msg in longpoll.listen():
                 else:
                     items.pop(item)
                     send_message(msg.peer_id, item + ' удалено')
-        if msg.user_id == myId and msg.text.split()[0].lower() == 'баф'
-            for i in range(4,len(msg.text)):
+        if msg.user_id == myId and msg.text.split()[0].lower() == 'баф':
+            for i in range(4, len(msg.text)):
                 if msg.Text[i] == 'а':
                     functions.baf_request('атаки', 5, msg.peer_id)
                 if msg.Text[i] == 'з':

@@ -134,19 +134,6 @@ def main():
                         else:
                             items.pop(item)
                             send_message(msg.peer_id, item + ' удалено')
-                    # Взятие бафов#
-                if msg.from_me is True and len(msg.text.split()) > 0 and msg.text.split()[0].lower() == 'баф':
-                    for i in range(4, len(msg.text)):
-                        if msg.text[i] == 'а':
-                            baf_request('атаки', 5, msg.peer_id)
-                        if msg.text[i] == 'з':
-                            baf_request('защиты', 7, msg.peer_id)
-                        if msg.text[i] == 'у':
-                            baf_request('удачи', 2, msg.peer_id)
-                        if msg.text[i] == 'ч':
-                            baf_request('человека', 3, msg.peer_id)
-                        if msg.text[i] == 'н':
-                            baf_request('нежити', 7, msg.peer_id)
                 # Взаимодействие с чатами для оплаты если бот не в спящем режиме#
                 if sleepMode is not True and (msg.peer_id == mainChatId or msg.peer_id == sitisChatId or msg.from_group):
                     if msg.text.lower().find('передать') != -1 and reply_or_fwd(msg) is not None \

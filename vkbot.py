@@ -54,7 +54,7 @@ def get_id(text):
 
 def check_item_and_pay(msg):
     text = msg.text.lower()
-    item = text[(msg.text.find(":") + 3):(len(msg.text) - msg.text[::-1].find(":") - 1)]
+    item = text[(text.find(":") + 3):(len(text) - text[::-1].find(":") - 1)]
     mult = 1
     if item.find("*") != -1:
         mult = int(item[:item.find("*")])

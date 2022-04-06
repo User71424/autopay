@@ -52,8 +52,9 @@ def get_id(text):
     return num
 
 
-def check_item_and_pay(msg, conv_id):
-    item = msg.text[(msg.text.find(":") + 3):(len(msg.text) - msg.text[::-1].find(":") - 1)]
+def check_item_and_pay(msg):
+    text = msg.text.lower()
+    item = text[(msg.text.find(":") + 3):(len(msg.text) - msg.text[::-1].find(":") - 1)]
     mult = 1
     if item.find("*") != -1:
         mult = int(item[:item.find("*")])
@@ -63,7 +64,7 @@ def check_item_and_pay(msg, conv_id):
 
     price, currency = items[item]
     payment = mult * price
-    personId = get_id(msg.text[msg.text.find("[") + 3:])
+    personId = get_id(text[text.find("[") + 3:])
     if msgToPay is not None and personId == msgToPay.user_id:
         id = msgToPay.message_id
         vkBot.send(msgToPay.peer_id, 'Передать ' + str(payment) + ' ' + currency, id)
@@ -82,24 +83,24 @@ def main():
                     msg_id = msg.message_id
                     data = vkBot.getByMsgId(msg_id)
                     conv_id = data['conversation_message_id']
-                    msg.text = msg.text.lower()
+                    text = msg.text.lower()
                     # Диалог с собой - настройка
                     if msg.to_me is True and msg.from_user is True and msg.user_id == myId:
-                        if msg.text == 'пп':
+                        if text == 'пп':
                             vkBot.send(msg.peer_id, 'Жив')
-                        if msg.text == 'стартспам':
+                        if text == 'стартспам':
                             sleepMode = False
-                        if msg.text == 'не спамим':
+                        if text == 'не спамим':
                             sleepMode = True
-                        if msg.text == 'выкл':
+                        if text == 'выкл':
                             ####
                             pass
-                        if msg.text.split()[0] == 'объявление':
+                        if text.split()[0] == 'объявление':
                             autoPostMessage = msg.text[10:]
                             vkBot.send(msg.peer_id, 'Текст обновлен')
-                        if msg.text.split()[0] == 'предмет':
+                        if text.split()[0] == 'предмет':
                             try:
-                                s = msg.text.split()
+                                s = text.split()
                                 price = int(s[1])
                                 currency = s[2]
                                 item = ''
@@ -115,8 +116,8 @@ def main():
                             except:
                                 vkBot.send(msg.peer_id, 'Ошибка')
                                 continue
-                        if msg.text.split()[0] == 'удали':
-                            item = msg.text[6:]
+                        if text.split()[0] == 'удали':
+                            item = text[6:]
                             if items.get(item) is None:
                                 vkBot.send(msg.peer_id, item + ' не найдено')
                             else:
@@ -124,13 +125,13 @@ def main():
                                 vkBot.send(msg.peer_id, item + ' удалено')
                     # Взаимодействие с чатами для оплаты если бот не в спящем режиме#
                     if sleepMode is not True and (msg.peer_id == mainChatId or msg.peer_id == sitisChatId or msg.from_group):
-                        if msg.text.find('передать') != -1 and reply_or_fwd(msg) is not None \
+                        if text.find('передать') != -1 and reply_or_fwd(msg) is not None \
                                 and reply_or_fwd(msg)['from_id'] == myId:
                             msgToPay = msg
                         if msg.from_group \
-                                and len(msg.text) > 8 \
-                                and msg.text[:8] == 'получено':
-                            check_item_and_pay(msg, conv_id)
+                                and len(msg) > 8 \
+                                and text[:8] == 'получено':
+                            check_item_and_pay(msg)
         except TypeError:
             print('Была ошибка в лонгполе')
         except IndexError:

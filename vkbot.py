@@ -56,6 +56,7 @@ def check_item_and_pay(msg):
     text = msg.text.lower()
     item = text[(text.find(":") + 3):(len(text) - text[::-1].find(":") - 1)]
     mult = 1
+
     if item.find("*") != -1:
         mult = int(item[:item.find("*")])
         item = item[item.find("*") + 1:]
@@ -129,7 +130,7 @@ def main():
                                 and reply_or_fwd(msg)['from_id'] == myId:
                             msgToPay = msg
                         if msg.from_group \
-                                and len(msg) > 8 \
+                                and len(text) > 8 \
                                 and text[:8] == 'получено':
                             check_item_and_pay(msg)
         except TypeError:

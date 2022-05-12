@@ -7,14 +7,7 @@ from time import sleep
 from me_class import *
 # инициализация сессии #
 vkBot = Bot(token='a1619d5400b0b5b215bea7b7186700a143f6538a80c9929f958cfff338cbb134f7bb756717414ee495d64')
-##################################
-# инициализация констант #
-myId, mainChatId, sitisChatId, gildChatId, transferBotId = 246960404, 2000000064, 2000000070, 2000000076, -183040898
-sleepMode = True
-autoPostMessage = '.'
-items = {}
-msgToPay = None
-##################################
+
 
 def autopost():
     while True:
@@ -71,12 +64,48 @@ def check_item_and_pay(msg):
         vkBot.send(msgToPay.peer_id, 'Передать ' + str(payment) + ' ' + currency, id)
         vkBot.send(myId, 'Заплачено ' + str(payment) + ' ' + currency + ' за ' + str(mult) + ' ' + item)
 
+def updateDataFile():
+    with open("items.txt", "w", encoding="UTF-8") as f:
+        for item in items:
+            price, currency = items[item]
+            f.write(str(price) + " " + currency + " " + item + "\n")
+
+def readAutoPostMsgFromFile():
+    with open("autopost.txt", "r", encoding="UTF-8") as f:
+        s = f.read()
+    return s
+
+def readItemsFromFile():
+    with open("items.txt", "r", encoding="UTF-8") as f:
+        temp_items = {}
+        for line in f:
+            s = line.split()
+            if len(s) < 3: continue
+            item = ""
+            for i in range(2, len(s)):
+                item += ' ' + s[i]
+            item = item.replace(' ', '', 1)
+            temp_items[item] = int(s[0]), s[1]
+    return temp_items
+
+
+
+##################################
+# инициализация констант #
+myId, mainChatId, sitisChatId, gildChatId, transferBotId = 246960404, 2000000064, 2000000070, 2000000076, -183040898
+sleepMode = True
+autoPostMessage = readAutoPostMsgFromFile()
+items = readItemsFromFile()
+msgToPay = None
+##################################
+
 
 autoPostThread = Thread(target=autopost, daemon=True)
 autoPostThread.start()
 
 def main():
     global sleepMode, autoPostMessage, items, myId, sitisChatId, mainChatId, msgToPay
+
     while True:
         try:
             for msg in vkBot.listen():
@@ -98,6 +127,8 @@ def main():
                             pass
                         if text.split()[0] == 'объявление':
                             autoPostMessage = msg.text[10:]
+                            with open("autopost.txt", "w", encoding="UTF-8") as f:
+                                f.write(autoPostMessage)
                             vkBot.send(msg.peer_id, 'Текст обновлен')
                         if text.split()[0] == 'предмет':
                             try:
@@ -114,6 +145,7 @@ def main():
                                 else:
                                     items[item] = price, currency
                                     vkBot.send(msg.peer_id, item + ' обновлен')
+                                updateDataFile()
                             except:
                                 vkBot.send(msg.peer_id, 'Ошибка')
                                 continue
@@ -124,6 +156,12 @@ def main():
                             else:
                                 items.pop(item)
                                 vkBot.send(msg.peer_id, item + ' удалено')
+                                updateDataFile()
+                        if text == "скуп":
+                            message = "В данный момент в скупе:\n"
+                            for item in items:
+                                message += item + " за " + str((items[item])[0]) + " " + (items[item])[1] + "\n"
+                            vkBot.send(msg.peer_id, message)
                     # Взаимодействие с чатами для оплаты если бот не в спящем режиме#
                     if sleepMode is not True and (msg.peer_id == mainChatId or msg.peer_id == sitisChatId or msg.from_group):
                         if text.find('передать') != -1 and reply_or_fwd(msg) is not None \

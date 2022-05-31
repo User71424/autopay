@@ -176,11 +176,11 @@ def main():
                             for item in items:
                                 message += item + " за " + str((items[item])[0]) + " " + (items[item])[1] + "\n"
                             vkBot.send(msg.peer_id, message)
-                    if data['from_id'] == transferBotId and text.find('продает через аукцион') != -1:
-                        checkLotList(msg)
+
                     # Взаимодействие с чатами для оплаты если бот не в спящем режиме#
                     if sleepMode is not True and (msg.peer_id == mainChatId or msg.peer_id == sitisChatId or msg.from_group):
-
+                        if data['from_id'] == transferBotId and text.find('продает через аукцион') != -1:
+                            checkLotList(msg)
                         if text.find('передать') != -1 and reply_or_fwd(msg) is not None \
                                 and reply_or_fwd(msg)['from_id'] == myId:
                             msgToPay = msg

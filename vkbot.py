@@ -88,11 +88,25 @@ def readItemsFromFile():
             temp_items[item] = int(s[0]), s[1]
     return temp_items
 
-
+def checkLotList(msg):
+    s = msg.text.lower().split('\n')
+    for i in range(0, len(s)):
+        if s[i].find('*') != -1:
+            line = s[i]
+            mult = int(line.split('*')[0])
+            item = line[line.find('*') + 1:line.find('-') - 1]
+            totalPrice = int(line[line.find('-'):].split(' ')[1])
+            if items.get(item) is None:
+                continue
+            else:
+                price, currency = items[item]
+                if price >= totalPrice/mult:
+                    vkBot.send(gameGroupId, 'купить лот ' + line[line.find('(') + 1 : line.find(')')])
+                    vkBot.send(myId, 'Заплачено ' +  price * mult + ' за ' + item + '(аукцион)')
 
 ##################################
 # инициализация констант #
-myId, mainChatId, sitisChatId, gildChatId, transferBotId = 246960404, 2000000064, 2000000070, 2000000076, -183040898
+myId, mainChatId, sitisChatId, gildChatId, transferBotId, gameGroupId, alinaId = 246960404, 2000000064, 2000000070, 2000000076, -183040898, -182985865, 135076938
 sleepMode = True
 autoPostMessage = readAutoPostMsgFromFile()
 items = readItemsFromFile()
@@ -162,8 +176,11 @@ def main():
                             for item in items:
                                 message += item + " за " + str((items[item])[0]) + " " + (items[item])[1] + "\n"
                             vkBot.send(msg.peer_id, message)
+                    if data['from_id'] == transferBotId and text.find('продает через аукцион') != -1:
+                        checkLotList(msg)
                     # Взаимодействие с чатами для оплаты если бот не в спящем режиме#
                     if sleepMode is not True and (msg.peer_id == mainChatId or msg.peer_id == sitisChatId or msg.from_group):
+
                         if text.find('передать') != -1 and reply_or_fwd(msg) is not None \
                                 and reply_or_fwd(msg)['from_id'] == myId:
                             msgToPay = msg

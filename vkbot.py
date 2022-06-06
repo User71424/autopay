@@ -72,15 +72,11 @@ def formatItems():
         s += str(price) + " " + currency + " " + item + "\n"
     return s
 
-def readAutoPostMsgFromFile():
-    with open("autopost.txt", "r", encoding="UTF-8") as f:
-        s = f.read()
-    return s
 
 def parseItemsFromGit():
     f = gitHub.readFromGit('items.txt')
     temp_items = {}
-    for line in f:
+    for line in f.split('\n'):
         s = line.split()
         if len(s) < 3: continue
         item = ""

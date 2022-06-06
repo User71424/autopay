@@ -5,6 +5,7 @@ from vk_api.utils import get_random_id
 from threading import Thread
 from time import sleep
 from me_class import *
+import gitHub
 # инициализация сессии #
 vkBot = Bot(token='a1619d5400b0b5b215bea7b7186700a143f6538a80c9929f958cfff338cbb134f7bb756717414ee495d64')
 
@@ -64,28 +65,29 @@ def check_item_and_pay(msg):
         vkBot.send(msgToPay.peer_id, 'Передать ' + str(payment) + ' ' + currency, id)
         vkBot.send(myId, 'Заплачено ' + str(payment) + ' ' + currency + ' за ' + str(mult) + ' ' + item)
 
-def updateDataFile():
-    with open("items.txt", "w", encoding="UTF-8") as f:
-        for item in items:
-            price, currency = items[item]
-            f.write(str(price) + " " + currency + " " + item + "\n")
+def formatItems():
+    s = ""
+    for item in items:
+        price, currency = items[item]
+        s += str(price) + " " + currency + " " + item + "\n"
+    return s
 
 def readAutoPostMsgFromFile():
     with open("autopost.txt", "r", encoding="UTF-8") as f:
         s = f.read()
     return s
 
-def readItemsFromFile():
-    with open("items.txt", "r", encoding="UTF-8") as f:
-        temp_items = {}
-        for line in f:
-            s = line.split()
-            if len(s) < 3: continue
-            item = ""
-            for i in range(2, len(s)):
-                item += ' ' + s[i]
-            item = item.replace(' ', '', 1)
-            temp_items[item] = int(s[0]), s[1]
+def parseItemsFromGit():
+    f = gitHub.readFromGit('items.txt')
+    temp_items = {}
+    for line in f:
+        s = line.split()
+        if len(s) < 3: continue
+        item = ""
+        for i in range(2, len(s)):
+           item += ' ' + s[i]
+        item = item.replace(' ', '', 1)
+        temp_items[item] = int(s[0]), s[1]
     return temp_items
 
 def checkLotList(msg):
@@ -108,8 +110,8 @@ def checkLotList(msg):
 # инициализация констант #
 myId, mainChatId, sitisChatId, gildChatId, transferBotId, gameGroupId, alinaId = 246960404, 2000000064, 2000000070, 2000000076, -183040898, -182985865, 135076938
 sleepMode = True
-autoPostMessage = readAutoPostMsgFromFile()
-items = readItemsFromFile()
+autoPostMessage = gitHub.readFromGit('autopost.txt')
+items = parseItemsFromGit()
 msgToPay = None
 ##################################
 
@@ -141,8 +143,7 @@ def main():
                             pass
                         if text.split()[0] == 'объявление':
                             autoPostMessage = msg.text[10:]
-                            with open("autopost.txt", "w", encoding="UTF-8") as f:
-                                f.write(autoPostMessage)
+                            gitHub.updateFileOnGit('autopost.txt', autoPostMessage)
                             vkBot.send(msg.peer_id, 'Текст обновлен')
                         if text.split()[0] == 'предмет':
                             try:
@@ -159,7 +160,7 @@ def main():
                                 else:
                                     items[item] = price, currency
                                     vkBot.send(msg.peer_id, item + ' обновлен')
-                                updateDataFile()
+                                gitHub.updateFileOnGit('items.txt', formatItems())
                             except:
                                 vkBot.send(msg.peer_id, 'Ошибка')
                                 continue
@@ -170,7 +171,7 @@ def main():
                             else:
                                 items.pop(item)
                                 vkBot.send(msg.peer_id, item + ' удалено')
-                                updateDataFile()
+                                gitHub.updateFileOnGit('items.txt', formatItems())
                         if text == "скуп":
                             message = "В данный момент в скупе:\n"
                             for item in items:

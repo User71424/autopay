@@ -193,8 +193,6 @@ def main():
             print('Была ошибка в лонгполе')
         except IndexError:
             print('Была ошибка в reply_or_forward')
-        except:
-            print('Другая ошибка')
 
 
 mainThread = Thread(target=main, daemon=True)

@@ -10,7 +10,7 @@ def readFromGit(filename):
 
 
 def updateFileOnGit(filename, content):
-    token = 'gghp_9kwJt1m5aOa0dU' + 'jMQgc10mU3C4i37i0j1Pnc'
+    token = 'ghp_9kwJt1m5aOa0dU' + 'jMQgc10mU3C4i37i0j1Pnc'
     g = Github(token)
     repo = g.get_user().get_repo('autopay')  # repo name
     contents = repo.get_contents(filename)

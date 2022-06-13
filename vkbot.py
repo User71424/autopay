@@ -184,7 +184,7 @@ def main():
                                 and len(text) > 8 \
                                 and text[:8] == 'получено':
                             check_item_and_pay(msg)
-                        if data['from_id'] == gameGroupId:
+                        if data['from_id'] == gameGroupId and 'возрождается где-то' in text:
                             notifBot = Bot(token='015ef2eaf71756ecdb2c1e82a03f9ddfb275cd2d7a1eb1c0805e1b8aa031b6497ac3a83e98d31178f0b52')
                             notifBot.send(2000000077, '@online ' + msg.text)
         except TypeError:

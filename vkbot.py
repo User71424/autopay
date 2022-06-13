@@ -72,7 +72,6 @@ def formatItems():
         s += str(price) + " " + currency + " " + item + "\n"
     return s
 
-
 def parseItemsFromGit():
     f = gitHub.readFromGit('items.txt')
     temp_items = {}
@@ -185,10 +184,16 @@ def main():
                                 and len(text) > 8 \
                                 and text[:8] == 'получено':
                             check_item_and_pay(msg)
+                        if data['from_id'] == gameGroupId:
+                            notifBot = Bot(token='015ef2eaf71756ecdb2c1e82a03f9ddfb275cd2d7a1eb1c0805e1b8aa031b6497ac3a83e98d31178f0b52')
+                            notifBot.send(2000000077, '@online ' + msg.text)
         except TypeError:
             print('Была ошибка в лонгполе')
         except IndexError:
             print('Была ошибка в reply_or_forward')
+        except Exception as e:
+            print(e)
+
 
 
 mainThread = Thread(target=main, daemon=True)

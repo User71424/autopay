@@ -91,7 +91,7 @@ def parseItemsFromTxt():
 
 
 def updateTxt(filename, text):
-    with open(filename) as f:
+    with open(filename, 'w') as f:
         f.write(text)
 
 def checkLotList(msg):

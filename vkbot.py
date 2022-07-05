@@ -17,14 +17,13 @@ def autopost():
             sleep(1)
             continue
         try:
-            vkBot.send(sitisChatId, autoPostMessage)
-        except:
-            vkBot.send(myId, 'Автопост в ситис ошибка')
-        try:
-            vkBot.send(mainChatId, autoPostMessage)
-        except:
-            vkBot.send(myId, 'Автопост в мейн ошибка')
-        sleep(1800)
+            for msg in longpoll.listen():
+                vkBot.send(sitisChatId, autoPostMessage)
+                vkBot.send(mainChatId, autoPostMessage)
+                sleep(1800)
+                break;
+        except Exception as e:
+            print(e)
 
 
 def reply_or_fwd(msg):
@@ -76,7 +75,6 @@ def formatItems():
 def parseItemsFromTxt():
     file = open('items.txt')
     f = file.read()
-
     temp_items = {}
     for line in f.split('\n'):
         s = line.split()
@@ -86,7 +84,6 @@ def parseItemsFromTxt():
            item += ' ' + s[i]
         item = item.replace(' ', '', 1)
         temp_items[item] = int(s[0]), s[1]
-
     return temp_items
 
 
@@ -143,8 +140,7 @@ def main():
                         if text == 'не спамим':
                             sleepMode = True
                         if text == 'выкл':
-                            ####
-                            pass
+                            exit()
                         if text.split()[0] == 'объявление':
                             autoPostMessage = msg.text[10:]
                             updateTxt('autopost.txt', autoPostMessage)

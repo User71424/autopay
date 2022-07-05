@@ -17,7 +17,7 @@ def autopost():
             sleep(1)
             continue
         try:
-            for msg in longpoll.listen():
+            for msg in vkBot.listen():
                 vkBot.send(sitisChatId, autoPostMessage)
                 vkBot.send(mainChatId, autoPostMessage)
                 sleep(1800)
